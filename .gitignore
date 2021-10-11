@@ -1,7 +1,4 @@
 
-/registry/target
-/registry/Cargo.lock
-
-/builder/node_modules
+node_modules
 /builder/package-lock.json
-/builder/dist/
+dist
