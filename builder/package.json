@@ -1,0 +1,29 @@
+{
+  "name": "ts-docs-auto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ts-docs/ts-docs-auto.git"
+  },
+  "author": "GoogleFeud",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ts-docs/ts-docs-auto/issues"
+  },
+  "homepage": "https://github.com/ts-docs/ts-docs-auto#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "eslint": "^8.0.0",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "@ts-docs/default-docs-structure": "^0.1.19",
+    "@ts-docs/ts-docs": "^0.1.2"
+  }
+}
