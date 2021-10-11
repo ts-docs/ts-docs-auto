@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node ."
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@ts-docs/default-docs-structure": "^0.1.19",
-    "@ts-docs/ts-docs": "^0.1.2"
+    "@ts-docs/ts-docs": "^0.1.2",
+    "got": "^11.8.2"
   }
 }
