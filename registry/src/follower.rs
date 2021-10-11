@@ -35,10 +35,19 @@ impl NpmFollower {
             current_seq: Arc::new(AtomicUsize::new(serde_json::from_slice::<RegistryInfo>(&req)?.last_seq))
         })
     }
-
+    
     pub async fn get<'a>(&mut self, n: u8) -> Result<hyper::body::Bytes, Box<dyn std::error::Error>> {
         let uri = format!("https://replicate.npmjs.com/_changes?since={}&include_docs=true&limit={}", self.current_seq.as_ref().fetch_add(n.into(), Ordering::Relaxed), n).parse()?;
         Result::Ok(body::to_bytes(self.client.get(uri).await?).await?)
+    }
+
+    pub async fn queue(&'static mut self, n: u8, cb: Box<dyn Fn(Vec<Package>) -> () + Send>) -> Result<(), Box<dyn std::error::Error>> {
+        cb(NpmFollower::json(&self.get(n).await?)?);
+        //tokio::time::sleep(std::time::Duration::from_millis(cooldown)).await;
+        tokio::spawn(async move {
+            self.queue(n, cb);
+        });
+        Result::Ok(())
     }
 
     pub fn json<'a>(bytes: &'a hyper::body::Bytes) -> Result<Vec<Package<'a>>, Box<dyn std::error::Error>> {
