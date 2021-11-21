@@ -24,8 +24,8 @@
     "typescript": "^4.4.3"
   },
   "dependencies": {
-    "@ts-docs/default-docs-structure": "^0.1.19",
-    "@ts-docs/ts-docs": "^0.1.2",
+    "@ts-docs/default-docs-structure": "^0.2.1",
+    "@ts-docs/ts-docs": "^0.2.1",
     "got": "^11.8.2"
   }
 }
