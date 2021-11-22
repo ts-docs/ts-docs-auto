@@ -1,14 +1,18 @@
 import got from "got";
 
+export interface RegistryPackageVersion {
+    devDependencies: Record<string, string>,
+    repository?: Record<string, string>|string,
+    main?: string,
+    name: string
+}
+
 export interface RegistryPackage {
     [key: string] : unknown;
     doc: {
-        versions: Record<string, {
-            dependencies: Record<string, string>
-        }>
+        versions: Record<string, RegistryPackageVersion>
     },
     id: string,
-    repository?: string
 }
 
 export interface RegistryInfo {

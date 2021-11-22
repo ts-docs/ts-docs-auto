@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/ts-docs/ts-docs-auto#readme",
   "devDependencies": {
+    "@types/adm-zip": "^0.4.34",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^8.0.0",
@@ -26,6 +27,7 @@
   "dependencies": {
     "@ts-docs/default-docs-structure": "^0.2.1",
     "@ts-docs/ts-docs": "^0.2.1",
+    "adm-zip": "^0.5.9",
     "got": "^11.8.2"
   }
 }
