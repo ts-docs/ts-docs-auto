@@ -12,7 +12,10 @@ export function getPackageRepo({ repository }: RegistryPackageVersion): string |
     return repoStr.slice(github + 11).replace(/.git/g, "");
 }
 
-export async function cloneRepo(pkg: RegistryPackageVersion): Promise<Array<string> | undefined> {
+export async function cloneRepo(pkg: RegistryPackageVersion): Promise<{
+    entries: Array<string>,
+    tsconfig?: string
+} | undefined> {
     const repo = getPackageRepo(pkg);
     if (!repo) return;
     let zipBuffer;
@@ -22,22 +25,25 @@ export async function cloneRepo(pkg: RegistryPackageVersion): Promise<Array<stri
         return;
     }
     const Zipper = new Zip(zipBuffer);
-    let tsconfig = false;
+    let tsconfig;
     const entries: Array<string> = [];
     for (const entry of Zipper.getEntries()) {
-        if (!tsconfig && entry.entryName.includes("tsconfig")) {
+        if (!tsconfig && entry.entryName.endsWith("tsconfig.json")) {
             Zipper.extractEntryTo(entry, "./repos");
-            tsconfig = true;
+            tsconfig = entry.entryName;
             continue;
         }
         if (!entry.isDirectory) continue;
         const rawName = entry.rawEntryName.toString("utf8");
         const sliced = rawName.slice(-4);
         if ((sliced === "lib/" && entries.length === 0) || sliced === "src/") {
-            entries.push(rawName);
-            Zipper.extractEntryTo(entry, "./repos");
+            const joined = `${rawName}index.ts`;
+            if (Zipper.getEntry(joined)) {
+                entries.push(`${rawName}index.ts`);
+                Zipper.extractEntryTo(entry, "./repos");
+            }
         }
     }
     if (!entries.length) return;
-    return entries;
+    return {entries};
 }
