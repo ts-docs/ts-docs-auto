@@ -12,7 +12,7 @@ export function getPackageRepo({ repository }: RegistryPackageVersion): string |
     return repoStr.slice(github + 11).replace(/.git/g, "");
 }
 
-export async function cloneRepo(pkg: RegistryPackageVersion): Promise<string | undefined> {
+export async function cloneRepo(pkg: RegistryPackageVersion): Promise<Array<string> | undefined> {
     const repo = getPackageRepo(pkg);
     if (!repo) return;
     let zipBuffer;
@@ -22,21 +22,22 @@ export async function cloneRepo(pkg: RegistryPackageVersion): Promise<string | u
         return;
     }
     const Zipper = new Zip(zipBuffer);
-    let srcPath;
-    let pathToSrc;
-    // Unintended consequence: "src" and "lib" folders are allowed inside other folders: for example "thing/src" will be found if there isn't a "src" folder in the parent directory
+    let tsconfig = false;
+    const entries: Array<string> = [];
     for (const entry of Zipper.getEntries()) {
+        if (!tsconfig && entry.entryName.includes("tsconfig")) {
+            Zipper.extractEntryTo(entry, "./repos");
+            tsconfig = true;
+            continue;
+        }
         if (!entry.isDirectory) continue;
         const rawName = entry.rawEntryName.toString("utf8");
         const sliced = rawName.slice(-4);
-        if (sliced === "lib/" || sliced === "src/") {
-            srcPath = entry;
-            pathToSrc = rawName;
-            break;
+        if ((sliced === "lib/" && entries.length === 0) || sliced === "src/") {
+            entries.push(rawName);
+            Zipper.extractEntryTo(entry, "./repos");
         }
     }
-    if (!srcPath) return;
-    Zipper.extractEntryTo(srcPath, "./repos");
-    console.log(`./repos/${pathToSrc}`);
-    return `./repos/${pathToSrc}`;
+    if (!entries.length) return;
+    return entries;
 }
