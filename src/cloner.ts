@@ -14,7 +14,8 @@ export function getPackageRepo({ repository }: RegistryPackageVersion): string |
 
 export async function cloneRepo(pkg: RegistryPackageVersion): Promise<{
     entries: Array<string>,
-    tsconfig?: string
+    tsconfig?: string,
+    branchName: string
 } | undefined> {
     const repo = getPackageRepo(pkg);
     if (!repo) return;
@@ -24,6 +25,7 @@ export async function cloneRepo(pkg: RegistryPackageVersion): Promise<{
     } catch {
         return;
     }
+    const mainBranch = (await got(`https://api.github.com/repos/${repo}`).json() as any).default_branch;
     const Zipper = new Zip(zipBuffer);
     let tsconfig;
     const entries: Array<string> = [];
@@ -31,6 +33,14 @@ export async function cloneRepo(pkg: RegistryPackageVersion): Promise<{
         if (!tsconfig && entry.entryName.endsWith("tsconfig.json")) {
             Zipper.extractEntryTo(entry, "./repos");
             tsconfig = entry.entryName;
+            continue;
+        }
+        if (entry.entryName.endsWith("README.md")) {
+            Zipper.extractEntryTo(entry, "./repos");
+            continue;
+        }
+        if (entry.entryName.endsWith("package.json")) {
+            Zipper.extractEntryTo(entry, "./repos");
             continue;
         }
         if (!entry.isDirectory) continue;
@@ -45,5 +55,5 @@ export async function cloneRepo(pkg: RegistryPackageVersion): Promise<{
         }
     }
     if (!entries.length) return;
-    return {entries};
+    return {entries, branchName: mainBranch, tsconfig};
 }

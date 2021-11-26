@@ -1,12 +1,13 @@
 
-import { Generator, Utils } from "@ts-docs/ts-docs";
+import { Generator, Utils } from "@ts-docs/ts-docs/dist/index";
 import { TypescriptExtractor } from "@ts-docs/extractor";
 import { workerData } from "worker_threads";
 import path from "path";
 
-const {entries, tsconfig, name, org} = workerData as {
+const {entries, tsconfig, name, org, branchName} = workerData as {
     entries: Array<string>,
     tsconfig?: string,
+    branchName?: string,
     name: string,
     org?: string
 }
@@ -16,7 +17,8 @@ const extractor = new TypescriptExtractor({
     tsconfig,
     externals: [Utils.handleDefaultAPI(), ...Utils.handleNodeAPI()],
     stripInternal: true,
-    cwd: path.join(process.cwd(), "repos")
+    cwd: path.join(process.cwd(), "repos"),
+    branchName
 });
 
 const projects = extractor.run();
